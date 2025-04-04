@@ -23,14 +23,12 @@ def measure():
     with tempfile.NamedTemporaryFile(delete=False, suffix=".jpg") as tmp:
         img_path = tmp.name
         img_file.save(img_path)
-
     image = cv2.imread(img_path)
     image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     result = hands.process(image_rgb)
-   if not hasattr(result, 'multi_hand_landmarks') or not result.multi_hand_landmarks:
+      if not hasattr(result, 'multi_hand_landmarks') or not result.multi_hand_landmarks:
         os.remove(img_path)
         return jsonify({"error": "No hand detected"}), 400
-
     h, w, _ = image.shape
     landmarks = result.hand_landmarks[0].landmark
     pairs = [(6, 10), (10, 14), (14, 18), (18, 22), (2, 4)]
