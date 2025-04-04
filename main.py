@@ -27,7 +27,7 @@ def measure():
     image = cv2.imread(img_path)
     image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     result = hands.process(image_rgb)
-    if not result.hand_landmarks:
+   if not hasattr(result, 'multi_hand_landmarks') or not result.multi_hand_landmarks:
         os.remove(img_path)
         return jsonify({"error": "No hand detected"}), 400
 
