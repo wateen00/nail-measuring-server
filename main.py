@@ -47,18 +47,16 @@ def measure():
     image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     result = hands.process(image_rgb)
 
-    if not result.hand_landmarks:
+    if not hasattr(result, 'multi_hand_landmarks') or not result.multi_hand_landmarks:
         os.remove(img_path)
         return jsonify({"error": "No hand detected"}), 400
 
-    # Skip card detection; assume fixed width for now
     card_pixel_width = 300  # manually assumed
     mm_per_pixel = 85.6 / card_pixel_width
 
     h, w, _ = image.shape
-    landmarks = result.hand_landmarks[0].landmark
+    landmarks = result.multi_hand_landmarks[0].landmark
 
-    # Fingertip widths: index(8), middle(12), ring(16), pinky(20), thumb(4)
     pairs = [(6, 10), (10, 14), (14, 18), (18, 22), (2, 4)]
     widths = []
 
@@ -75,4 +73,4 @@ def measure():
     return jsonify({"widths_mm": widths_mm, "sizes": sizes})
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=3000)
